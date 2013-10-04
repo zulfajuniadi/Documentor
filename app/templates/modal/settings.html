@@ -1,0 +1,17 @@
+<form class="form form-horizontal" id="settingsForm">
+    <div class="control-group">
+        <label for="" class="control-label">Default Directory</label>
+        <div class="controls">
+            <div class="input-append">
+                <input type="text" class="dir" name="defaultDir" id="defaultDir" required value="{{defaultDirectory}}">
+                <button class="add-on btn-primary btn" id="getDir">
+                    ...
+                </button>
+            </div>
+        </div>
+    </div>
+    <input type="file" nwdirectory id="filePickerInput"/>
+    <div class="form-actions">
+       <button class="btn btn-primary" type="submit">Save</button>
+    </div>
+</form>

@@ -1,0 +1,33 @@
+{{#each documents}}
+    <li class="editDoc" {{bind}}>
+        <div class="title">
+            <h4><a href="/edit/{{_id}}">{{title}}</a></h4>
+        </div>
+        <div class="body">
+            <ul class="pages">
+                {{#each pages}}
+                    <li>
+                        <a href="/view/{{../_id}}/{{_id}}">{{title}}</a>
+                        <a href="/edit/{{../_id}}/{{_id}}"><i class="icon-edit pull-right" style="margin-top:4px"></i> </a>
+                        {{#if headings}}
+                            <ul>
+                                {{#each headings}}
+                                    {{#is type 3}}
+                                        <li style="margin-left:20px">{{heading}}</li>
+                                    {{else}}
+                                        <li>{{heading}}</li>
+                                    {{/is}}
+                                {{/each}}
+                            </ul>
+                        {{/if}}
+                    </li>
+                {{/each}}
+            </ul>
+        </div>
+    </li>
+{{/each}}
+<li class="new" rel="action" id="newDoc">
+    <div class="body">
+        +
+    </div>
+</li>

@@ -1,0 +1,99 @@
+{{#sessionEq 'tocOpen' true}}
+    <div class="toc open" id="toc">
+{{else}}
+    <div class="toc" id="toc">
+{{/sessionEq}}
+    <div class="toc-header">
+        <h5>Table of Contents</h5>
+    </div>
+    <ul class="unstyled">
+        <li><a class="scrollTo" data-to="preview">Top</a></li>
+        {{#each page.headings}}
+            {{#is type 3}}
+                <li style="margin-left:20px"><a class="scrollTo" data-to="{{mdlink heading}}">{{heading}}</a></li>
+            {{else}}
+                <li><a class="scrollTo" data-to="{{mdlink heading}}">{{heading}}</a></li>
+            {{/is}}
+        {{/each}}
+    </ul>
+</div>
+
+{{#sessionEq 'panelOpen' true}}
+    <div class="panel open">
+{{else}}
+    <div class="panel">
+{{/sessionEq}}
+    <div class="panel-title">
+        <div class="panel-opener"></div>
+        <div class="btn-toolbar fixed">
+            <div class="btn-group" data-toggle="buttons-checkbox">
+                {{#sessionEq 'panelOpen' true}}
+                    <button type="button" class="btn btn-primary lock active">
+                        <i class="lockIcon icon-lock"></i>
+                {{else}}
+                    <button type="button" class="btn btn-primary lock">
+                        <i class="lockIcon icon-unlock"></i>
+                {{/sessionEq}}
+                </button>
+            </div>
+            <span class="separator"></span>
+            <button class="btn" title="Edit" id="editPage"><i class="icon-edit"></i></button>
+            <div class="btn-group" data-toggle="buttons-checkbox">
+                {{#sessionEq 'tocOpen' true}}
+                    <button type="button" class="btn btn-primary active tocBtn">
+                {{else}}
+                    <button type="button" class="btn btn-primary tocBtn">
+                {{/sessionEq}}
+                <i class="icon-list"></i></button>
+            </div>
+            <button class="btn" title="Home" id="goHome"><i class="icon-home"></i></button>
+            <span class="separator"></span>
+        </div>
+        <h3 class="doctitle">{{document.title}}</h3>
+    </div>
+    <div class="panel-body">
+        <ul class="unstyled">
+            {{#each document.pages}}
+            <li><a href="/view/{{../document._id}}/{{_id}}">{{title}}</a>
+                {{#if headings}}
+                    <ul>
+                        {{#each headings}}
+                            {{#is type 3}}
+                                <li style="margin-left:20px"><a class="scrollTo" data-to="{{mdlink heading}}">{{heading}}</a></li>
+                            {{else}}
+                                <li><a class="scrollTo" data-to="{{mdlink heading}}">{{heading}}</a></li>
+                            {{/is}}
+                        {{/each}}
+                    </ul>
+                {{/if}}
+            </li>
+            {{/each}}
+            <li>
+                <hr />
+                <ul class="unstyled">
+                    <li><a id="newPage"><i class="icon-plus"></i> Add New Page</a></li>
+                </ul>
+                <hr />
+            </li>
+        </ul>
+    </div>
+    <div class="panel-footer">
+        <ul class="unstyled">
+            <li><i class="icon-time"></i> Created : {{timeAgo document.createdAt}}</li>
+            <li><i class="icon-time"></i> Updated : {{timeAgo document.updatedAt}}</li>
+            <li><a href="/home"><i class="icon-home"></i> Home</a>
+            </li>
+        </ul>
+    </div>
+</div>
+{{#sessionEq 'panelOpen' true}}
+    <div class="wrapper" style="padding-left:280px;">
+{{else}}
+    <div class="wrapper" style="padding-left:70px">
+{{/sessionEq}}
+    <div class="row-fluid" id="preview">
+        <div class="previewWrapper">
+            <div></div>
+        </div>
+    </div>
+</div>

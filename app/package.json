@@ -1,0 +1,11 @@
+{
+  "name": "Documentor",
+  "main": "app://root/index.html",
+  "window" : {
+    "title" : "Documentor",
+    // "toolbar" : false,
+    "toolbar" : true,
+    "width" : 1280,
+    "height" : 720
+  }
+}
