@@ -1,13 +1,50 @@
+if(typeof require !== 'function') {
+    require = function(){};
+}
+
+Utils.subscribe('FILESTORAGE:SAVE', function(filePath){
+    $.bootstrapGrowl(filePath + ' Saved');
+})
+
+var fs = require('fs');
+
+var gui = require('nw.gui');
+arguments = gui.App.argv;
+if(arguments.length > 0) {
+    arguments.forEach(function(file){
+        openFile(file);
+    });
+}
+
+var Settings = Utils.Store.get('settings') || {};
+
+if(!Utils.isString(Settings.defaultDirectory)) {
+    var home = '';
+    var sepp = '/';
+    if(process.platform == 'win32') {
+        home = process.env['USERPROFILE'];
+        sepp = '\\';
+    } else {
+        home = process.env['HOME'];
+        sepp = '/';
+    }
+    var path = home + sepp + 'Documentor';
+    fs.mkdir(path);
+    Settings.defaultDirectory = path;
+}
+
 var Documents = new Sarah.Collection('Documents', {
     plugins: {
         localstorage: {
             name: 'Documents'
+        },
+        filestorage: {
+            name: 'Documents',
+            path: Settings.defaultDirectory
         }
     },
     softDelete : false
 });
-
-var Settings = Utils.Store.get('settings') || {};
 
 Deps.register('watchSettings', function(){
     return Settings;
@@ -15,7 +52,7 @@ Deps.register('watchSettings', function(){
     Utils.Store.set('settings', settings);
 });
 
-$.fn.switchClass = function(classA, classB) {
+jQuery.fn.switchClass = function(classA, classB) {
     if(this.hasClass(classA)) {
         this.removeClass(classA);
         this.addClass(classB);
@@ -25,9 +62,33 @@ $.fn.switchClass = function(classA, classB) {
     }
 }
 
-// bootbox.animate(false);
+jQuery.fn.serializeObject = function() {
+  var arrayData, objectData;
+  arrayData = this.serializeArray();
+  objectData = {};
 
-var tokens = marked.lexer('text', {});
+  $.each(arrayData, function() {
+    var value;
+
+    if (this.value != null) {
+      value = this.value;
+    } else {
+      value = '';
+    }
+
+    if (objectData[this.name] != null) {
+      if (!objectData[this.name].push) {
+        objectData[this.name] = [objectData[this.name]];
+      }
+
+      objectData[this.name].push(value);
+    } else {
+      objectData[this.name] = value;
+    }
+  });
+
+  return objectData;
+};
 
 marked.setOptions({
     gfm: true,
@@ -66,6 +127,28 @@ Handlebars.registerHelper('decodeEntities', function(str) {
     }
     return str;
 });
+
+function openFile(filePath) {
+    if(fs.existsSync(filePath)) {
+        var extension = filePath.split('.').pop();
+        if(extension !== 'mdd') {
+            return $.bootstrapGrowl('File cannot be opened by Documentor', { type: 'error'});
+        }
+        Utils.FileStorage.load(filePath, function(e, data){
+            if(e) {
+                 $.bootstrapGrowl('File cannot be opened by Documentor', { type: 'error'});
+                return;
+            }
+            Documents.merge(data);
+            if(data.pages) {
+                if(data.pages.length > 0) {
+                    var pageId = data.pages[0]._id;
+                    Router.to('/view/' + data._id + '/' + pageId);
+                }
+            }
+        });
+    }
+}
 
 function download(filename, text) {
     var pom = document.createElement('a');
@@ -107,8 +190,24 @@ Router.get('/home', 'home', function() {
                 $('#filePickerInput').focus().click();
             });
             $('#filePickerInput').on('change', function(){
-                $('#defaultDir').val($(this).val())
+                $('#defaultDirectory').val($(this).val())
+            });
+            $('#settingsForm').on('submit', function(e){
+                var form = $(this);
+                var data = form.serializeObject();
+                if(fs){
+                    if (fs.existsSync(data.defaultDirectory)) {
+                        Settings = _.extend(Settings, data);
+                    }
+                }
+                Modal.hide();
             })
+        },
+        'change #openFile' : function(event) {
+            openFile(event.target.value);
+        },
+        'click #openBtn' : function() {
+            $('#openFile').focus().click();
         }
     });
 
@@ -364,7 +463,7 @@ Router.get('/edit/:id/:pageId', 'edit', function(routeData) {
         Documents.update({
             _id: doc._id
         }, doc);
-        $.bootstrapGrowl('Page saved');
+        // $.bootstrapGrowl('Page saved');
         Router.onExit(function(callback) {
             if(Utils.isFunction(callback)) {
                 return callback();
@@ -440,6 +539,7 @@ Router.get('/edit/:id/:pageId', 'edit', function(routeData) {
         'click #editDocumentName': function() {
             bootbox.prompt('Rename Document : ', function(result) {
                 if (result !== '' && result !== null) {
+                    doc.oldtitle = doc.title;
                     doc.title = result;
                     Documents.update({
                         _id: doc._id
@@ -629,9 +729,6 @@ Router.get('/edit/:id/:pageId', 'edit', function(routeData) {
                     updatePreview(2);
                 }
             }])
-        },
-        'click #downloadPage': function() {
-            download(page.title + '.md', $('.pageContents').val());
         },
         'click #viewPage': function() {
             Router.to('/view/' + doc._id + '/' + page._id);

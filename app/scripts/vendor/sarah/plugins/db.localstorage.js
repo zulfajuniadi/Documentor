@@ -19,7 +19,7 @@
                     data.updatedAt = new Date(data.updatedAt);
                     if (data.deletedAt === '1970-01-01T00:00:00.000Z' || data.deletedAt === null) {
                         data.deletedAt = null;
-                        Collections[self.name].insert(data);
+                        Collections[self.name].insert(data, true);
                     }
                 });
             });

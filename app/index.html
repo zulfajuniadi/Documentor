@@ -3,20 +3,18 @@
     <title>Documentor</title>
     <link rel="stylesheet" href="/styles/style.css">
 </head>
-<body>
-    <button class="btn" style="position:absolute;top:0px;left:-" onclick='javacript:document.location="/index.html"'>
-        <i class="icon-refresh"></i>
-    </button>
+<body id="holder">
     <div id="outlet"></div>
 
     <script
         data-app = "/scripts/app.js",
         data-rooturl = "",
         data-base = "/scripts/vendor/sarah",
-        data-plugins = "session.localstorage.js,db.localstorage.js,modal.js",
+        data-plugins = "session.localstorage.js,db.localstorage.js,modal.js,db.filestorage.js",
         data-templates = "app.html,edit.html,view.html,docs.html,modal/settings.html"
         data-templatedir = '/templates/'
     ></script>
+    <script src="/scripts/filehandler.js"></script>
     <script src="/scripts/vendor/jquery.min.js"></script>
     <script src="/scripts/vendor/underscore-min.js"></script>
     <script src="/scripts/vendor/handlebars.min.js"></script>

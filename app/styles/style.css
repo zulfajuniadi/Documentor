@@ -5655,6 +5655,9 @@ select {
 #modal #modal-body button.btn {
   padding: 0 20px;
 }
+#modal #modal-body button.btn:hover {
+  color: white;
+}
 #modal #modal-body input {
   overflow: hidden;
   text-overflow: ellipsis;
